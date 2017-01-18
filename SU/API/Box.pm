@@ -105,37 +105,37 @@ sub login {
         }
         close($fh);
 
-    my $random = new String::Random;
-    my $time = time + 60;
-    my $jti = $random->randpattern("...................................");
-    my %post_data = (
-             "iss" => "$self->{client_id}",
-             "sub" => "$self->{sub}",
-             "box_sub_type" => "$self->{box_sub_type}",
-             "aud" => "https://api.box.com/oauth2/token",
-             "jti" => "$jti",
-             "exp" => $time);
+        my $random = new String::Random;
+        my $time = time + 60;
+        my $jti = $random->randpattern("...................................");
+        my %post_data = (
+                 "iss" => "$self->{client_id}",
+                 "sub" => "$self->{sub}",
+                 "box_sub_type" => "$self->{box_sub_type}",
+                 "aud" => "https://api.box.com/oauth2/token",
+                 "jti" => "$jti",
+                 "exp" => $time);
 
-    my $json_post_data = encode_json \%post_data;
-    my $jws = encode_jwt(payload => $json_post_data,
-                         alg => 'RS256',
-                         key => \$self->{key},
-                         extra_headers => { kid => $kid,
-                                            typ => "JWT"
-                                          }
-                        );
+        my $json_post_data = encode_json \%post_data;
+        my $jws = encode_jwt(payload => $json_post_data,
+                             alg => 'RS256',
+                             key => \$self->{key},
+                             extra_headers => { kid => $kid,
+                                                typ => "JWT"
+                                              }
+                            );
 
-    my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
-    my $response = $self->do_request("POST", "token", "$params", "");
+        my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
+        my $response = $self->do_request("POST", "token", "$params", "");
 
 
-    if ($self->request_code == 200 ) {
-        $self->{login_status} = "login successful";
-        $self->{access_token} = $response->{access_token};
-    } else {
-        $self->{login_status} = "unknown status line: " . $self->{res}->status_line;
+        if ($self->request_code == 200) {
+            $self->{login_status} = "login successful";
+            $self->{access_token} = $response->{access_token};
+        } else {
+            $self->{login_status} = "unknown status line: " . $self->{res}->status_line;
+        }
     }
-}
 
     $self->{ua}->default_header('Accept' => 'application/json',
                                 'Authorization' => "Bearer $self->{access_token}");
