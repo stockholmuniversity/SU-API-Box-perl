@@ -54,7 +54,7 @@ sub do_request {
             $data = encode_json($data);
             $req->content($data);
          };
-    }
+    };
     $self->{res} = $self->{ua}->request($req);
 
     if (!$self->{res}->is_success) {
@@ -102,7 +102,7 @@ sub login {
         {
             local $/;
             $self->{key} = <$fh>;
-        }
+        };
         close($fh);
 
         my $random = new String::Random;
@@ -122,7 +122,7 @@ sub login {
                              key => \$self->{key},
                              extra_headers => { kid => $kid,
                                                 typ => "JWT"
-                                              }
+                                              };
                             );
 
         my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
@@ -134,8 +134,8 @@ sub login {
             $self->{access_token} = $response->{access_token};
         } else {
             $self->{login_status} = "unknown status line: " . $self->{res}->status_line;
-        }
-    }
+        };
+    };
 
     $self->{ua}->default_header('Accept' => 'application/json',
                                 'Authorization' => "Bearer $self->{access_token}");
