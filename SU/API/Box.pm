@@ -109,7 +109,7 @@ sub login {
     my $time = time + 60;
     my $jti = $random->randpattern("...................................");
     my %post_data = (
-             "iss" => "6awc61g4kgkiwuf4o85dkdla8xfuejcp",
+             "iss" => "$self->{client_id}",
              "sub" => "$self->{sub}",
              "box_sub_type" => "$self->{box_sub_type}",
              "aud" => "https://api.box.com/oauth2/token",
