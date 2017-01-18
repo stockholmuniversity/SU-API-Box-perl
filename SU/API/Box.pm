@@ -9,7 +9,6 @@ use URI::Escape;
 use JSON;
 use Crypt::JWT qw(encode_jwt);
 use String::Random;
-use Data::Dumper;
 
 sub new {
     my $class = shift;
