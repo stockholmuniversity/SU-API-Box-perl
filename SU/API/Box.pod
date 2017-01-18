@@ -1,6 +1,6 @@
 =head1 NAME
 
-SU::API::Icinga2
+SU::API::Box
 
 =head1 SYNOPSIS
 
@@ -58,7 +58,7 @@ Returns true when logged in, otherwise returns undef.
 
 Perform the actual request.
 
-"PARAMS" is optional and can be any parameters that the Icinga API supports.
+"PARAMS" is optional and can be any parameters that the Box API supports.
 
 "DATA" is optional and is a Perl data structure that will be converted to JSON.
 
