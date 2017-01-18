@@ -3,12 +3,12 @@ package SU::API::Box;
 use strict;
 use warnings;
 
-use LWP::UserAgent;
-use HTTP::Request;
-use URI::Escape;
-use JSON;
 use Crypt::JWT qw(encode_jwt);
+use HTTP::Request;
+use JSON;
+use LWP::UserAgent;
 use String::Random;
+use URI::Escape;
 
 sub new {
     my $class = shift;
