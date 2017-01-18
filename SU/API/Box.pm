@@ -121,7 +121,7 @@ sub login {
                              key => \$self->{key},
                              extra_headers => { kid => $kid,
                                                 typ => "JWT"
-                                              };
+                                              }
                             );
 
         my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
