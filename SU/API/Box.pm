@@ -58,8 +58,14 @@ sub do_request {
 
     if (!$self->{res}->is_success) {
         return undef;
+    }
+    my $content;
+    if ( $self->{res}->code == 204 ) {
+        $content = "{}";
+    } else {
+        $content = $self->{res}->content;
     };
-    my $json_result = decode_json($self->{res}->content);
+    my $json_result = decode_json($content);
 
     if ($json_result) {
         return $json_result;
