@@ -13,7 +13,7 @@ SU::API::Box
     $box->login("/path/to/key","kid") or die $box->login_status;
     my $users = $box->do_request("GET", "users","limit=2");
 
-    if (!$result) {
+    if (!$users) {
         warn $box->request_code;
         warn $box->request_status_line;
     };
