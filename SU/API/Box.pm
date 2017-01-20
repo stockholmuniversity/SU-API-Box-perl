@@ -58,8 +58,14 @@ sub do_request {
 
     if (!$self->{res}->is_success) {
         return undef;
+    }
+    my $content;
+    if ( $self->{res}->code == 204 ) {
+        $content = "{}";
+    } else {
+        $content = $self->{res}->content;
     };
-    my $json_result = decode_json($self->{res}->content);
+    my $json_result = decode_json($content);
 
     if ($json_result) {
         return $json_result;
@@ -121,7 +127,7 @@ sub login {
                              key => \$self->{key},
                              extra_headers => { kid => $kid,
                                                 typ => "JWT"
-                                              };
+                                              }
                             );
 
         my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
