@@ -3,7 +3,6 @@ package SU::API::Box;
 use strict;
 use warnings;
 
-
 use Crypt::JWT qw(encode_jwt);
 use HTTP::Request;
 use JSON;
