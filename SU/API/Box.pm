@@ -19,10 +19,8 @@ sub new {
         box_sub_type => shift,
     };
 
-    $self->{url} = "https://api.box.com/oauth2";
 
     $self->{ua} = LWP::UserAgent->new;
-    $self->{ua}->default_header('Accept' => 'application/json');
     $self->{login_status} = "not logged in";
 
     bless $self, $class;
@@ -31,6 +29,16 @@ sub new {
 
 sub do_request {
     my ($self,$method,$uri,$params,$data) = @_;
+
+    my $now_inc_margin = time + 100;
+    if (($now_inc_margin >= $self->{exp_time}) && ( $self->{exp_time} != 0)) {
+	warn "Token are about to expire(or has expired), need to fetch a fresh one.";
+        my $fetch_token = $self->login($self->{key_file},$self->{kid});
+        if (!$fetch_token) {
+            warn "Couldn't fetch token, better exit here.";
+            exit 1;
+        };
+    };
 
     my $request_url;
     $request_url = "$self->{url}/${uri}";
@@ -97,6 +105,9 @@ sub encode_params {
 sub login {
     my ($self,$key_file,$kid) = @_;
 
+    $self->{url} = "https://api.box.com/oauth2";
+    $self->{ua}->default_header('Accept' => 'application/json');
+    $self->{exp_time} = 0;
     $self->{key_file} = $key_file;
     $self->{kid} = $kid;
     if ( ! -f $key_file) {
@@ -133,18 +144,19 @@ sub login {
         my $params = "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&client_id=$self->{client_id}&client_secret=$self->{client_secret}&assertion=$jws";
         my $response = $self->do_request("POST", "token", "$params", "");
 
-
         if ($self->request_code == 200) {
             $self->{login_status} = "login successful";
             $self->{access_token} = $response->{access_token};
+            $self->{exp_time} = $response->{expires_in} + time;
+            $self->{ua}->default_header('Accept' => 'application/json',
+                                        'Authorization' => "Bearer $self->{access_token}");
+            $self->{url} = "https://api.box.com/2.0";
         } else {
             $self->{login_status} = "unknown status line: " . $self->{res}->status_line;
+            return undef;
         };
     };
 
-    $self->{ua}->default_header('Accept' => 'application/json',
-                                'Authorization' => "Bearer $self->{access_token}");
-    $self->{url} = "https://api.box.com/2.0";
     return $self->{access_token};
 };
 
